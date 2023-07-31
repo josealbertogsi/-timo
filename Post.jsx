@@ -1,28 +1,55 @@
+import { format, formatDistanceToNow } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
+
 import { Avatar } from './Avatar'
 import { Comment } from './Comment';
-import styles from './Post.module.css';
-export function Post() {
+
+import  styles from './Post.module.css';
+
+const comments = [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    7,
+];
+
+export function Post({ author, publishedAt, content, }) {
+    const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {locale: ptBR,
+    })
+
+    const publishedDateRelativeToNow = formatDistanceToNow(publishedAt,{
+        locale: ptBR,
+        addSuffix: true,
+    })
+
     return (
         <article className={styles.post}>
             <header>
                 <div className={styles.author}>
-                    <Avatar src="https://github.com/albertojosegsi.png"/>
+                    <Avatar hasBorder={true} src={author.avatarUrl}/>
                     <div className={styles.authorInfo}>
-                        <strong>Digego Fernandes</strong>
-                        <span>Web Developer</span>
+                        <strong>{author.name}</strong>
+                        <span>{author.role}</span>
                     </div>
                 </div>
 
-                <time title="11 de maio às 08:13" dateTime="2023-05-11 08:13:30">Publicado há uma 1h</time>
+                <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>
+                {publishedDateRelativeToNow}
+                </time>
             </header>
             <div className={styles.content}>
-                <p>Fala galera</p>
-                <p>Lorem ipsum diam est iaculis cubilia litora lorem lacinia euismod netus molestie malesuada rutrum donec aliquet quisque nisi, ultrices torquent justo cubilia aliquam euismod accumsan vel aliquet tempor.</p>
-                <p>
-                    <a href="">#novoprojeto</a>{' '}
-                    <a href="">#nlw</a>{' '}
-                    <a href="">#rocketseat</a>{' '}
-                </p>
+
+                {content.map(line=> {
+                    if (line.type == 'paragraph') {
+                        return <p>{line.content}</p>;
+                    } else if (line.type == 'link') {
+                        return <p><a href="#">{line.content}</a></p>;
+                    }
+                })}
+
             </div>
             <form className={styles.commentForm}>
                 <strong>Deixe o seu feedback</strong>
@@ -32,9 +59,9 @@ export function Post() {
                 </footer>
             </form>
             <div className={styles.commentList}>
-                <Comment />
-                <Comment />
-                <Comment />
+                {comments.map(comment => {
+                    return <Comment />
+                })}
             </div>
         </article>
     )
